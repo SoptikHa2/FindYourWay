@@ -15,7 +15,7 @@ namespace Find_Your_Way
         [NonSerialized]
         public bool alive = true;
         [NonSerialized]
-        public int fitness = 0;
+        public int fitness;
 
         public Entity(float x, float y, int dataLength = 1000, float nextX = 0, float nextY = 0)
         {
@@ -24,6 +24,7 @@ namespace Find_Your_Way
             this.data = GenRandomData(dataLength);
             this.nextX = nextX;
             this.nextY = nextY;
+            this.fitness = 1;
         }
 
         private Entity(float x, float y, int[] data, float nextX = 0, float nextY = 0)
@@ -33,6 +34,7 @@ namespace Find_Your_Way
             this.data = data;
             this.nextX = nextX;
             this.nextY = nextY;
+            this.fitness = 1;
         }
 
         private int[] GenRandomData(int length, int from = -1, int to = 1)
@@ -45,7 +47,7 @@ namespace Find_Your_Way
             return d;
         }
 
-        private Entity Breed(Entity partner, int mutationFrom = -1, int mutationTo = 1)
+        public Entity Breed(Entity partner, int mutationFrom = -1, int mutationTo = 1)
         {
             int[] newData = new int[data.Length];
             int line = Game.currentGame.rnd.Next(1, data.Length);
@@ -150,6 +152,18 @@ namespace Find_Your_Way
                     }
                 }
             }
+        }
+
+        public void CalcFitnessAndReset()
+        {
+            // Calc fitness
+            fitness = (int)x; // that was easy :)
+            // Reset
+            x = 0;
+            y = 250;
+            nextX = 0.7f;
+            nextY = 0f;
+            alive = true;
         }
     }
 }

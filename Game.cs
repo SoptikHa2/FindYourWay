@@ -54,12 +54,12 @@ namespace Find_Your_Way
             currentGame = this;
         }
 
-        private void Generate(int x = 50, int y = 250)
+        private void Generate(int x = 0, int y = 250)
         {
             entities = new Entity[numberOfEntities];
             for (int i = 0; i < numberOfEntities; i++)
             {
-                entities[i] = new Entity(x, y, genomLength, 0.7f, 0.3f);
+                entities[i] = new Entity(x, y, genomLength, 0.7f, 0f);
             }
         }
 
