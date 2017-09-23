@@ -21,23 +21,30 @@ namespace Find_Your_Way
         public int numberOfEntities { get; private set; }
         public int mutationChance { get; private set; }
         public float multiplier = 1;
+        private int genomLength;
 
-        public Game(Obstacle[] innerObstacles, int numberOfEntities = 1000, int mutationChance = 2)
+        public Game(Obstacle[] innerObstacles, int genomLength = 1000, int numberOfEntities = 1000, int mutationChance = 2)
         {
             rnd = new Random();
             this.obstacles = innerObstacles;
             this.numberOfEntities = numberOfEntities;
             this.mutationChance = mutationChance;
+            this.genomLength = genomLength;
             SetGame();
             Generate();
         }
 
-        public Game(Obstacle[] innerObstacles, int seed, int numberOfEntities = 1000, int mutationChance = 2)
+                                                        // Have to use useSeed, constructors should be different (without it, how would you tell, what constructor am I using from code [new Game(new Obstacle[0], 2, 2, 2)] ?
+        public Game(Obstacle[] innerObstacles, int seed, bool useSeed = true, int genomLength = 1000, int numberOfEntities = 1000, int mutationChance = 2)
         {
-            rnd = new Random(seed);
+            if (useSeed)
+                rnd = new Random(seed);
+            else
+                rnd = new Random(seed);
             this.obstacles = innerObstacles;
             this.numberOfEntities = numberOfEntities;
             this.mutationChance = mutationChance;
+            this.genomLength = genomLength;
             SetGame();
             Generate();
         }
@@ -50,19 +57,19 @@ namespace Find_Your_Way
         private void Generate(int x = 50, int y = 250)
         {
             entities = new Entity[numberOfEntities];
-            for(int i = 0; i < numberOfEntities; i++)
+            for (int i = 0; i < numberOfEntities; i++)
             {
-                entities[i] = new Entity(x, y, 1000, 0.7f, 0.3f);
+                entities[i] = new Entity(x, y, genomLength, 0.7f, 0.3f);
             }
         }
 
         public void Draw(Graphics g)
         {
-            foreach(Obstacle o in obstacles)
+            foreach (Obstacle o in obstacles)
             {
                 g.DrawRectangle(obstacleBrush, o.x, o.y, o.width, o.height);
             }
-            foreach(Entity e in entities)
+            foreach (Entity e in entities)
             {
                 g.FillRectangle(entityBrush, e.x - 3, e.y - 3, 3, 3);
             }
@@ -70,7 +77,7 @@ namespace Find_Your_Way
 
         public void Move(int frame)
         {
-            foreach(Entity e in entities)
+            foreach (Entity e in entities)
             {
                 e.Move(frame);
             }
