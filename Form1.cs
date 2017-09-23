@@ -12,9 +12,12 @@ namespace Find_Your_Way
 {
     public partial class Form1 : Form
     {
+        public static Form1 thisForm;
+
         public Form1()
         {
             InitializeComponent();
+            thisForm = this;
         }
 
         /// <summary>
@@ -26,6 +29,16 @@ namespace Find_Your_Way
         {
             new DrawForm().Show();
             Hide();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                new DrawForm(true).Show();
+                Hide();
+            }
+            catch { }
         }
     }
 }

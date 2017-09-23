@@ -13,7 +13,7 @@ namespace Find_Your_Way
         private static Pen obstacleBrush = new Pen(new SolidBrush(Color.Black));
         private static SolidBrush entityBrush = new SolidBrush(Color.Red);
 
-        public static Game currentGame { get; private set; }
+        public static Game currentGame;
 
         public Random rnd { get; private set; }
         public Obstacle[] obstacles;

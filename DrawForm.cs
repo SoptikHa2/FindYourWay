@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,15 +25,51 @@ namespace Find_Your_Way
         private SolidBrush buildBrush = new SolidBrush(Color.Blue);
         private static readonly object locker = new object();
         private bool isEditMode = false;
-        public DrawForm()
+        private bool forceQuit = true;
+
+        public DrawForm(bool load = false)
         {
             InitializeComponent();
-            Game game = new Game(new Obstacle[] { new Obstacle(50, 220, 10, 60), new Obstacle(100, 180, 10, 60), new Obstacle(100, 290, 10, 60) }, maxTicks, numberOfEntities, 5);
+            this.DoubleBuffered = true;
+            Game game = null;
+            if (!load)
+                game = new Game(new Obstacle[] { new Obstacle(50, 220, 10, 60), new Obstacle(100, 180, 10, 60), new Obstacle(100, 290, 10, 60) }, maxTicks, numberOfEntities, 5);
+            else
+            {
+                try
+                {
+                    using (OpenFileDialog dialog = new OpenFileDialog())
+                    {
+                        if (dialog.ShowDialog() == DialogResult.OK)
+                        {
+                            string name = dialog.FileName;
+                            string text = File.ReadAllText(name);
+                            try
+                            {
+                                Game.currentGame = Serializer.DeserializeObject(text) as Game;
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Failed to load save. File is corrupted.", "Failed to load");
+                                throw ex;
+                            }
+                        }
+                        else
+                            throw new Exception("User canceled file load");
+                    }
+                }
+                catch
+                {
+                    Form1.thisForm.Show();
+                    forceQuit = false;
+                    Close();
+                    return;
+                }
+            }
             graphics = CreateGraphics();
             timer = new Timer();
-            timer.Interval = 15;
+            timer.Interval = 30;
             timer.Tick += Timer_Tick;
-            //timer.Start();
             nextgen.Enabled = true;
         }
 
@@ -53,6 +90,8 @@ namespace Find_Your_Way
                     {
                         nextgen.Enabled = true;
                         setObstacles.Enabled = true;
+                        reset_entities.Enabled = true;
+                        save.Enabled = true;
                     }
                     else
                         StartNextGen();
@@ -65,6 +104,8 @@ namespace Find_Your_Way
                     {
                         nextgen.Enabled = true;
                         setObstacles.Enabled = true;
+                        reset_entities.Enabled = true;
+                        save.Enabled = true;
                     }
                     else
                         StartNextGen();
@@ -74,12 +115,17 @@ namespace Find_Your_Way
 
         private void DrawForm_Paint(object sender, PaintEventArgs e)
         {
-            Game.currentGame.Draw(graphics);
+            try
+            {
+                Game.currentGame.Draw(graphics);
+            }
+            catch { }
         }
 
         private void DrawForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Application.Exit();
+            if (forceQuit)
+                Application.Exit();
         }
 
         private void nextgen_Click(object sender, EventArgs e)
@@ -107,6 +153,8 @@ namespace Find_Your_Way
                 {
                     nextgen.Enabled = false;
                     setObstacles.Enabled = false;
+                    save.Enabled = false;
+                    reset_entities.Enabled = false;
 
                     // Change moves:draw ration
                     string text = movesPerDraw.Text;
@@ -114,10 +162,10 @@ namespace Find_Your_Way
                     if (int.TryParse(text, out mpd))
                     {
                         if (mpd >= 1)
-                            if (mpd > 100)
+                            if (mpd > 300)
                             {
-                                movesPerDraw.Text = "100";
-                                movesPerFrame = 100;
+                                movesPerDraw.Text = "300";
+                                movesPerFrame = 300;
                             }
                             else
                                 movesPerFrame = mpd;
@@ -183,6 +231,11 @@ namespace Find_Your_Way
             }
         }
 
+        /// <summary>
+        /// Edit obstacles
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
             timer.Stop();
@@ -264,6 +317,44 @@ namespace Find_Your_Way
 
         private void save_Click(object sender, EventArgs e)
         {
+            try
+            {
+                string save = Serializer.SerializeObject(Game.currentGame);
+
+                SaveFileDialog savefile = new SaveFileDialog();
+                // set a default file name
+                savefile.FileName = $"save-{DateTime.Now.ToShortDateString()}-{DateTime.Now.ToShortTimeString().Replace(':', '.')}.fyw";
+                // set filters - this can be done in properties as well
+                savefile.Filter = "Find Your Way file (*.fyw)|*.fyw|All files (*.*)|*.*";
+
+                if (savefile.ShowDialog() == DialogResult.OK)
+                {
+                    using (StreamWriter sw = new StreamWriter(savefile.FileName))
+                        sw.WriteLine(save);
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Couldn't save file, something bad happened", "Error");
+            }
+        }
+
+        private void delay_TextChanged(object sender, EventArgs e)
+        {
+            int c = 0;
+            if (int.TryParse(delay.Text, out c))
+            {
+                if (c < 15)
+                {
+                }
+                else if (c > 100)
+                {
+                }
+                else
+                    timer.Interval = c;
+            }
+            else
+                delay.Text = timer.Interval.ToString();
         }
     }
 }

@@ -37,6 +37,9 @@
             this.movesPerDraw = new System.Windows.Forms.TextBox();
             this.save = new System.Windows.Forms.Button();
             this.reset_entities = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.delay = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -128,11 +131,41 @@
             this.reset_entities.UseVisualStyleBackColor = true;
             this.reset_entities.Click += new System.EventHandler(this.reset_entities_Click);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(509, 99);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(112, 13);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "Delay between frames";
+            // 
+            // delay
+            // 
+            this.delay.Location = new System.Drawing.Point(619, 96);
+            this.delay.Name = "delay";
+            this.delay.Size = new System.Drawing.Size(40, 20);
+            this.delay.TabIndex = 10;
+            this.delay.Text = "30";
+            this.delay.TextChanged += new System.EventHandler(this.delay_TextChanged);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(665, 99);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(46, 13);
+            this.label5.TabIndex = 11;
+            this.label5.Text = "15 - 100";
+            // 
             // DrawForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.delay);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.reset_entities);
             this.Controls.Add(this.save);
             this.Controls.Add(this.movesPerDraw);
@@ -166,5 +199,8 @@
         private System.Windows.Forms.TextBox movesPerDraw;
         private System.Windows.Forms.Button save;
         private System.Windows.Forms.Button reset_entities;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox delay;
+        private System.Windows.Forms.Label label5;
     }
 }
