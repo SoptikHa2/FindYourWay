@@ -13,7 +13,7 @@ namespace Find_Your_Way
     public partial class DrawForm : Form
     {
         const int maxTicks = 2000;
-        const int movesPerFrame = 5;
+        int movesPerFrame = 5;
         const int numberOfEntities = 500;
 
         private Graphics graphics;
@@ -21,12 +21,13 @@ namespace Find_Your_Way
         private int ticks = 0;
         private ulong generation = 1;
         private SolidBrush textBrush = new SolidBrush(Color.Black);
+        private SolidBrush buildBrush = new SolidBrush(Color.Blue);
         private static readonly object locker = new object();
         private bool isEditMode = false;
         public DrawForm()
         {
             InitializeComponent();
-            Game game = new Game(new Obstacle[] { new Obstacle(50, 220, 10, 60), new Obstacle(100, 180, 10, 60), new Obstacle(100, 290, 10, 60) }, maxTicks, numberOfEntities);
+            Game game = new Game(new Obstacle[] { new Obstacle(50, 220, 10, 60), new Obstacle(100, 180, 10, 60), new Obstacle(100, 290, 10, 60) }, maxTicks, numberOfEntities, 5);
             graphics = CreateGraphics();
             timer = new Timer();
             timer.Interval = 15;
@@ -41,31 +42,33 @@ namespace Find_Your_Way
             graphics.DrawString($"Ticks: {ticks} / {maxTicks}     Generation: {generation}", new Font("Arial", 11), textBrush, new PointF(0, 0));
             Game.currentGame.Draw(graphics);
             for (int i = 0; i < movesPerFrame; i++)
+            {
                 Game.currentGame.Move(ticks);
-            ticks += 1 * movesPerFrame;
-            if (ticks >= maxTicks)
-            {
-                timer.Stop();
-                ticks = 0;
-                if (!checkbox_autoNextGen.Checked)
+                ticks++;
+                if (ticks >= maxTicks)
                 {
-                    nextgen.Enabled = true;
-                    setObstacles.Enabled = true;
+                    timer.Stop();
+                    ticks = 0;
+                    if (!checkbox_autoNextGen.Checked)
+                    {
+                        nextgen.Enabled = true;
+                        setObstacles.Enabled = true;
+                    }
+                    else
+                        StartNextGen();
                 }
-                else
-                    StartNextGen();
-            }
-            else if (Game.currentGame.entities.Where(x => x.alive).Count() == 0)
-            {
-                timer.Stop();
-                ticks = 0;
-                if (!checkbox_autoNextGen.Checked)
+                else if (Game.currentGame.entities.Where(x => x.alive).Count() == 0)
                 {
-                    nextgen.Enabled = true;
-                    setObstacles.Enabled = true;
+                    timer.Stop();
+                    ticks = 0;
+                    if (!checkbox_autoNextGen.Checked)
+                    {
+                        nextgen.Enabled = true;
+                        setObstacles.Enabled = true;
+                    }
+                    else
+                        StartNextGen();
                 }
-                else
-                    StartNextGen();
             }
         }
 
@@ -105,6 +108,28 @@ namespace Find_Your_Way
                     nextgen.Enabled = false;
                     setObstacles.Enabled = false;
 
+                    // Change moves:draw ration
+                    string text = movesPerDraw.Text;
+                    int mpd = 5;
+                    if (int.TryParse(text, out mpd))
+                    {
+                        if (mpd >= 1)
+                            if (mpd > 100)
+                            {
+                                movesPerDraw.Text = "100";
+                                movesPerFrame = 100;
+                            }
+                            else
+                                movesPerFrame = mpd;
+                        else
+                        {
+                            movesPerDraw.Text = "1";
+                            movesPerFrame = 1;
+                        }
+                    }
+                    else
+                        movesPerDraw.Text = movesPerFrame.ToString();
+
                     List<Entity> ent = Game.currentGame.entities.ToList();
 
                     // Comp fitness
@@ -120,7 +145,7 @@ namespace Find_Your_Way
                             ent[i].fitness = 1;
                     // Breed
                     List<Entity> newOnes = new List<Entity>();
-                    while(newOnes.Count() < ent.Count)
+                    while (newOnes.Count() < ent.Count)
                     {
                         Entity parent1 = null;
                         Entity parent2 = null;
@@ -128,9 +153,9 @@ namespace Find_Your_Way
                         int sum = ent.Select(x => x.fitness).Sum();
                         int random = Game.currentGame.rnd.Next(0, sum);
 
-                        for(int i = 0; i < ent.Count(); i++)
+                        for (int i = 0; i < ent.Count(); i++)
                         {
-                            if(random < ent[i].fitness)
+                            if (random < ent[i].fitness)
                             {
                                 parent1 = ent[i];
                                 break;
@@ -175,15 +200,15 @@ namespace Find_Your_Way
             {
                 int x = e.X;
                 int y = e.Y;
-                if (x > 400 || y > 560)
+                if (x > 500 || y > 560)
                     return;
 
                 // If clicked inside obstacle, remove it
                 bool clickedInside = false;
-                for(int i = 0; i < Game.currentGame.obstacles.Length; i++)
+                for (int i = 0; i < Game.currentGame.obstacles.Length; i++)
                 {
                     Obstacle o = Game.currentGame.obstacles[i];
-                    if(x >= o.x && x <= o.x + o.width &&
+                    if (x >= o.x && x <= o.x + o.width &&
                         y >= o.y && y <= o.y + o.height)
                     {
                         clickedInside = true;
@@ -199,10 +224,11 @@ namespace Find_Your_Way
                 }
                 if (!clickedInside)
                 {
-                    if(obstacleX == -1)
+                    if (obstacleX == -1)
                     {
                         obstacleX = x;
                         obstacleY = y;
+                        graphics.FillRectangle(buildBrush, x - 3, y - 3, 6, 6);
                     }
                     else
                     {
@@ -220,6 +246,24 @@ namespace Find_Your_Way
                     }
                 }
             }
+        }
+
+        private void reset_entities_Click(object sender, EventArgs e)
+        {
+            if (generation > 1)
+            {
+                if (MessageBox.Show("Are you sure? That'll erase everything that your entities learned and "
+                     + "death of " + (numberOfEntities / 2) * generation + " entities you killed will become unnecessary", "Kill ALL entities?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    generation = 1;
+                    Game.currentGame.GenerateEntities();
+                }
+            }
+
+        }
+
+        private void save_Click(object sender, EventArgs e)
+        {
         }
     }
 }

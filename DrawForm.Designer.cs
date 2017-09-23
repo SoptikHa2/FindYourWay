@@ -32,6 +32,11 @@
             this.nextgen = new System.Windows.Forms.Button();
             this.checkbox_autoNextGen = new System.Windows.Forms.CheckBox();
             this.setObstacles = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.movesPerDraw = new System.Windows.Forms.TextBox();
+            this.save = new System.Windows.Forms.Button();
+            this.reset_entities = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -75,11 +80,64 @@
             this.setObstacles.UseVisualStyleBackColor = true;
             this.setObstacles.Click += new System.EventHandler(this.button1_Click);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(509, 73);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(96, 13);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Moves : Draw ratio";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(640, 73);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(19, 13);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "1 :";
+            // 
+            // movesPerDraw
+            // 
+            this.movesPerDraw.Location = new System.Drawing.Point(665, 70);
+            this.movesPerDraw.Name = "movesPerDraw";
+            this.movesPerDraw.Size = new System.Drawing.Size(40, 20);
+            this.movesPerDraw.TabIndex = 6;
+            this.movesPerDraw.Text = "5";
+            // 
+            // save
+            // 
+            this.save.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.save.Location = new System.Drawing.Point(512, 518);
+            this.save.Name = "save";
+            this.save.Size = new System.Drawing.Size(260, 31);
+            this.save.TabIndex = 7;
+            this.save.Text = "Save";
+            this.save.UseVisualStyleBackColor = true;
+            this.save.Click += new System.EventHandler(this.save_Click);
+            // 
+            // reset_entities
+            // 
+            this.reset_entities.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.reset_entities.Location = new System.Drawing.Point(512, 481);
+            this.reset_entities.Name = "reset_entities";
+            this.reset_entities.Size = new System.Drawing.Size(260, 31);
+            this.reset_entities.TabIndex = 8;
+            this.reset_entities.Text = "Reset Entities";
+            this.reset_entities.UseVisualStyleBackColor = true;
+            this.reset_entities.Click += new System.EventHandler(this.reset_entities_Click);
+            // 
             // DrawForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.reset_entities);
+            this.Controls.Add(this.save);
+            this.Controls.Add(this.movesPerDraw);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.setObstacles);
             this.Controls.Add(this.checkbox_autoNextGen);
             this.Controls.Add(this.nextgen);
@@ -103,5 +161,10 @@
         private System.Windows.Forms.Button nextgen;
         private System.Windows.Forms.CheckBox checkbox_autoNextGen;
         private System.Windows.Forms.Button setObstacles;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox movesPerDraw;
+        private System.Windows.Forms.Button save;
+        private System.Windows.Forms.Button reset_entities;
     }
 }

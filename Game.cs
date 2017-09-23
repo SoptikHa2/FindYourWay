@@ -31,7 +31,7 @@ namespace Find_Your_Way
             this.mutationChance = mutationChance;
             this.genomLength = genomLength;
             SetGame();
-            Generate();
+            GenerateEntities();
         }
 
                                                         // Have to use useSeed, constructors should be different (without it, how would you tell, what constructor am I using from code [new Game(new Obstacle[0], 2, 2, 2)] ?
@@ -46,7 +46,7 @@ namespace Find_Your_Way
             this.mutationChance = mutationChance;
             this.genomLength = genomLength;
             SetGame();
-            Generate();
+            GenerateEntities();
         }
 
         public void SetGame()
@@ -54,7 +54,7 @@ namespace Find_Your_Way
             currentGame = this;
         }
 
-        private void Generate(int x = 0, int y = 250)
+        public void GenerateEntities(int x = 0, int y = 250)
         {
             entities = new Entity[numberOfEntities];
             for (int i = 0; i < numberOfEntities; i++)
