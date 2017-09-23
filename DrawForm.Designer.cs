@@ -31,6 +31,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.nextgen = new System.Windows.Forms.Button();
             this.checkbox_autoNextGen = new System.Windows.Forms.CheckBox();
+            this.setObstacles = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -64,11 +65,22 @@
             this.checkbox_autoNextGen.UseVisualStyleBackColor = true;
             this.checkbox_autoNextGen.CheckedChanged += new System.EventHandler(this.checkbox_autoNextGen_CheckedChanged);
             // 
+            // setObstacles
+            // 
+            this.setObstacles.Location = new System.Drawing.Point(509, 43);
+            this.setObstacles.Name = "setObstacles";
+            this.setObstacles.Size = new System.Drawing.Size(126, 23);
+            this.setObstacles.TabIndex = 3;
+            this.setObstacles.Text = "Set Obstacles";
+            this.setObstacles.UseVisualStyleBackColor = true;
+            this.setObstacles.Click += new System.EventHandler(this.button1_Click);
+            // 
             // DrawForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.setObstacles);
             this.Controls.Add(this.checkbox_autoNextGen);
             this.Controls.Add(this.nextgen);
             this.Controls.Add(this.label1);
@@ -79,6 +91,7 @@
             this.Text = "Find Your Way";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.DrawForm_FormClosed);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.DrawForm_Paint);
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.DrawForm_MouseClick);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -89,5 +102,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button nextgen;
         private System.Windows.Forms.CheckBox checkbox_autoNextGen;
+        private System.Windows.Forms.Button setObstacles;
     }
 }

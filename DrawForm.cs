@@ -22,6 +22,7 @@ namespace Find_Your_Way
         private ulong generation = 1;
         private SolidBrush textBrush = new SolidBrush(Color.Black);
         private static readonly object locker = new object();
+        private bool isEditMode = false;
         public DrawForm()
         {
             InitializeComponent();
@@ -30,13 +31,13 @@ namespace Find_Your_Way
             timer = new Timer();
             timer.Interval = 15;
             timer.Tick += Timer_Tick;
-            timer.Start();
-            nextgen.Enabled = false;
+            //timer.Start();
+            nextgen.Enabled = true;
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            graphics.Clear(Color.White);
+            graphics.Clear(BackColor);
             graphics.DrawString($"Ticks: {ticks} / {maxTicks}     Generation: {generation}", new Font("Arial", 11), textBrush, new PointF(0, 0));
             Game.currentGame.Draw(graphics);
             for (int i = 0; i < movesPerFrame; i++)
@@ -47,7 +48,10 @@ namespace Find_Your_Way
                 timer.Stop();
                 ticks = 0;
                 if (!checkbox_autoNextGen.Checked)
+                {
                     nextgen.Enabled = true;
+                    setObstacles.Enabled = true;
+                }
                 else
                     StartNextGen();
             }
@@ -56,7 +60,10 @@ namespace Find_Your_Way
                 timer.Stop();
                 ticks = 0;
                 if (!checkbox_autoNextGen.Checked)
+                {
                     nextgen.Enabled = true;
+                    setObstacles.Enabled = true;
+                }
                 else
                     StartNextGen();
             }
@@ -96,6 +103,7 @@ namespace Find_Your_Way
                 if (!timer.Enabled)
                 {
                     nextgen.Enabled = false;
+                    setObstacles.Enabled = false;
 
                     List<Entity> ent = Game.currentGame.entities.ToList();
 
@@ -146,6 +154,70 @@ namespace Find_Your_Way
 
                     generation++;
                     timer.Start();
+                }
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            timer.Stop();
+            checkbox_autoNextGen.Checked = false;
+            isEditMode = !isEditMode;
+            checkbox_autoNextGen.Enabled = !isEditMode;
+            nextgen.Enabled = !isEditMode;
+        }
+
+        int obstacleX = -1;
+        int obstacleY = -1;
+        private void DrawForm_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (isEditMode)
+            {
+                int x = e.X;
+                int y = e.Y;
+                if (x > 400 || y > 560)
+                    return;
+
+                // If clicked inside obstacle, remove it
+                bool clickedInside = false;
+                for(int i = 0; i < Game.currentGame.obstacles.Length; i++)
+                {
+                    Obstacle o = Game.currentGame.obstacles[i];
+                    if(x >= o.x && x <= o.x + o.width &&
+                        y >= o.y && y <= o.y + o.height)
+                    {
+                        clickedInside = true;
+                        List<Obstacle> newList = Game.currentGame.obstacles.ToList();
+                        newList.RemoveAt(i);
+                        Game.currentGame.obstacles = newList.ToArray();
+                        obstacleX = -1;
+                        obstacleY = -1;
+                        graphics.Clear(BackColor);
+                        Game.currentGame.Draw(graphics);
+                        break;
+                    }
+                }
+                if (!clickedInside)
+                {
+                    if(obstacleX == -1)
+                    {
+                        obstacleX = x;
+                        obstacleY = y;
+                    }
+                    else
+                    {
+                        int obsX = Math.Min(obstacleX, x);
+                        int obsY = Math.Min(obstacleY, y);
+                        int width = Math.Abs(obstacleX - x);
+                        int height = Math.Abs(obstacleY - y);
+                        List<Obstacle> newList = Game.currentGame.obstacles.ToList();
+                        newList.Add(new Obstacle(obsX, obsY, width, height));
+                        Game.currentGame.obstacles = newList.ToArray();
+                        obstacleX = -1;
+                        obstacleY = -1;
+                        graphics.Clear(BackColor);
+                        Game.currentGame.Draw(graphics);
+                    }
                 }
             }
         }
